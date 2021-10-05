@@ -40,7 +40,7 @@ const main = async () => {
 
         break;
       case 2:
-        search.record.forEach((place, i) => {
+        search.recordToUpperCase.forEach((place, i) => {
 
           const idx = `${i + 1}`.green
           console.log(`${idx} ${place}`);

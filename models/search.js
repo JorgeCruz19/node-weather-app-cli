@@ -1,12 +1,23 @@
+const fs = require('fs')
 const axios = require('axios')
 
 class Search {
 
   record = [];
+  dbPath='./db/database.json'
 
   constructor () {
-    // TODO: leer DB si existe
+    this.readDB();
   }
+
+  get recordToUpperCase(){
+    return this.record.map(place => {
+      let words = place.split(' ');
+      words = words.map(w => w[0].toUpperCase() + w.substring(1) );
+      return words.join(' ');
+    });
+  }
+
   get paramsMapbox() {
     return {
       'access_token': process.env.MAPBOX_KEY,
@@ -68,10 +79,28 @@ class Search {
     if (this.record.includes(place.toLocaleLowerCase() )) {
       return; 
     }
-
+    this.record = this.record.splice(0,5);
     this.record.unshift(place.toLocaleLowerCase())
+
+    this.saveDB();
   }
 
+  saveDB(){
+    const payload = {
+      record: this.record
+    }
+    fs.writeFileSync(this.dbPath, JSON.stringify(payload));
+
+  }
+  readDB(){
+    if ( !fs.existsSync(this.dbPath) ) {
+      return;
+    }
+
+    const info = fs.readFileSync(this.dbPath, {encoding: 'utf-8'})
+    const data = JSON.parse(info)
+    this.record = data.record
+  }
 }
 
 
